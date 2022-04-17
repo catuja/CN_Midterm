@@ -1,16 +1,21 @@
-from mailbox import Message
-from socket import *
+from socket import * # include socket lib
 
-serverName = "localhost" # 127.0.0.1
-serverPort = 12300
+address = "127.0.0.1"
+port = 12300
+
+# create and bind server socket
 serverSocket = socket(AF_INET, SOCK_DGRAM)
-serverSocket.bind((serverName, serverPort))
+serverSocket.bind((address, port))
 
-message = "hello client"
+message = "Received"
 
 print ("The server is ready to receive")
 
 while True:
+
+    # receiving data
     receivedMessage, clientAddress = serverSocket.recvfrom(2048)
-    print ("Received:", receivedMessage.decode())
+    print ("Client:", receivedMessage.decode())
+
+    # sending data
     serverSocket.sendto(message.encode(), clientAddress)
