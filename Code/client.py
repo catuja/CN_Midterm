@@ -2,11 +2,14 @@ from socket import * # include socket lib
 import time
 import json
 
+exist = False
+
 address = "127.0.0.1"
 port = 12300
 
 # create client socket
 clientSocket = socket(AF_INET, SOCK_DGRAM)
+clientSocket.settimeout(1)
 
 # sending data
 message = "Hello server"
@@ -17,7 +20,7 @@ clientSocket.sendto(message.encode(), (address, port))
 receivedMessage, serverAddress = clientSocket.recvfrom(2048)
 end = time.time() # system time after response
 print("Server:", receivedMessage.decode())
-print("RTT:", round(((end - start)* 1000), 3), "ms")
+print("RTT:", round(((end - start)* 1000), 3), "ms\n")
 
 
 message = input("Date: ")
@@ -29,12 +32,20 @@ with open("../wheel_rotation_sensor_data.json", "r") as file:
 
     for i in data:
         if i["date"] == message:
-            #print("g")
+            exist = True
             item = json.dumps(i, indent = 5)
             start = time.time()
             clientSocket.sendto(item.encode(), (address, port))
 
-receivedMessage, serverAddress = clientSocket.recvfrom(2048)
-end = time.time()
-print("Server:", receivedMessage.decode())
-print("RTT:", round(((end - start)* 1000), 3), "ms")
+if exist == False:
+    print("\nNo data found for this date")
+else: 
+    exist = False
+    try:
+        receivedMessage, serverAddress = clientSocket.recvfrom(2048)
+        receivedMessage, serverAddress = clientSocket.recvfrom(2048)
+        end = time.time()
+        print("\nServer:", receivedMessage.decode())
+        print("RTT:", round(((end - start)* 1000), 3), "ms")
+    except timeout as e:
+        print("No reply received within one second. Error:", e)
