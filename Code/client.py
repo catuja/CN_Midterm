@@ -29,7 +29,6 @@ class Client:
         print("Server:", receivedMessage.decode())
         print("RTT:", round(((end - self.start)* 1000), 3), "ms\n")
 
-
 exist = False
 
 serverAddress = "127.0.0.1"
@@ -45,13 +44,11 @@ except timeout as e: # handle timeout
         print("No reply received within one second. Error:", e)
         sys.exit(1) # exit program
 
-
-# input/send json file data
+# read/send json file data
 message = input("Date: ") # user input requested date
 with open("../wheel_rotation_sensor_data.json", "r") as file: # open json file
     text = file.read() # read json file and adjust to right format
     text = text.replace('\'','\"')
-    text = text.replace('None','"None"')
     data = json.loads(text) # deserialize to python obj
 
     for i in data: # iterate over json data
